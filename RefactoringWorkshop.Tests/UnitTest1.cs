@@ -159,3 +159,101 @@ public class ExtractMethodRefactoringTests
         _sut.Apply("return x + y;", "return x + y;", "ReturnSum"),
         "return x + y;");
 }
+
+
+public class RenameMethodRefactoringTests
+{
+    private readonly RenameMethodRefactoring _sut = new();
+
+    [Fact]
+    public void RenameMethod_DefinitionOnly_UpdatesMethodName()
+    {
+        var source = "void Calculate() { int Calculate=1 }";
+        var expected = "void Compute() { int Calculate=1 }";
+        var actual = _sut.Apply(source, "Calculate", "Compute");
+        Assert.Equal(expected, actual);
+    }
+
+   
+
+    [Fact]
+    public void RenameMethod_CallSite_UpdatesUsage()
+    {
+        var source = "int main() { Calculate(); }";
+        var expected = "int main() { Compute(); }";
+        var actual = _sut.Apply(source, "Calculate", "Compute");
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RenameMethod_DeclarationAndMultipleCalls_UpdatesAll()
+    {
+        var source = "void Run() { } int main() { Run(); Run(); }";
+        var expected = "void Start() { } int main() { Start(); Start(); }";
+        var actual = _sut.Apply(source, "Run", "Start");
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RenameMethod_WithParameters_KeepsSignatureIntact()
+    {
+        var source = "void Log(string msg, int level) { }";
+        var expected = "void Print(string msg, int level) { }";
+        var actual = _sut.Apply(source, "Log", "Print");
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RenameMethod_InClassContext_UpdatesMethodName()
+    {
+        var source = "class Player { void Move() { } };";
+        var expected = "class Player { void Jump() { } };";
+        var actual = _sut.Apply(source, "Move", "Jump");
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RenameMethod_PointerToMethod_UpdatesUsage()
+    {
+        var source = "auto func = &Actions::Execute;";
+        var expected = "auto func = &Actions::Run;";
+        var actual = _sut.Apply(source, "Execute", "Run");
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RenameMethod_TemplateFunction_UpdatesName()
+    {
+        var source = "template<typename T> void Sort(T arr) { }";
+        var expected = "template<typename T> void Order(T arr) { }";
+        var actual = _sut.Apply(source, "Sort", "Order");
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RenameMethod_SimilarNameSubstring_DoesNotRenamePartialMatch()
+    {
+        var source = "void Test() { } void TestAll() { }";
+        var expected = "void Check() { } void TestAll() { }";
+        var actual = _sut.Apply(source, "Test", "Check");
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RenameMethod_InsideComment_DoesNotRename()
+    {
+        var source = "// This calls Calculate() \n void Calculate() { }";
+        var expected = "// This calls Calculate() \n void Compute() { }";
+        var actual = _sut.Apply(source, "Calculate", "Compute");
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void RenameMethod_InStringLiteral_DoesNotRename()
+    {
+        var source = "log(\"Action: Calculate\"); void Calculate() { }";
+        var expected = "log(\"Action: Calculate\"); void Compute() { }";
+        var actual = _sut.Apply(source, "Calculate", "Compute");
+        Assert.Equal(expected, actual);
+    }
+}
