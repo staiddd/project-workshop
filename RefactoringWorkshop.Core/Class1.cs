@@ -5,7 +5,8 @@
 /// </summary>
 public enum RefactoringVariant
 {
-    RenameVariable = 1
+    RenameVariable = 1,
+    ExtractMethod = 4 // <-- новый вариант
 }
 
 /// <summary>
@@ -15,19 +16,23 @@ public sealed class RefactoringRequest
 {
     public RefactoringRequest(
         string sourceCode,
-        string oldName,
-        string newName)
+        string oldName = "",
+        string newName = "",
+        string selectedBlock = "",
+        string newMethodName = "")
     {
         SourceCode = sourceCode;
         OldName = oldName;
         NewName = newName;
+        SelectedBlock = selectedBlock;
+        NewMethodName = newMethodName;
     }
 
     public string SourceCode { get; }
-
     public string OldName { get; }
-
     public string NewName { get; }
+    public string SelectedBlock { get; }
+    public string NewMethodName { get; }
 }
 
 public interface IRenameVariableRefactoring
@@ -45,15 +50,36 @@ public sealed class RenameVariableRefactoring : IRenameVariableRefactoring
 }
 
 /// <summary>
+/// Extract Method refactoring interface + stub.
+/// </summary>
+public interface IExtractMethodRefactoring
+{
+    string Apply(string sourceCode, string selectedBlock, string newMethodName);
+}
+
+public sealed class ExtractMethodRefactoring : IExtractMethodRefactoring
+{
+    public string Apply(string sourceCode, string selectedBlock, string newMethodName)
+    {
+        // TODO (TDD/Red stage): implement extract method for C++ source.
+        return sourceCode;
+    }
+}
+
+/// <summary>
 /// Orchestrator used by UI entry point.
 /// </summary>
 public sealed class RefactoringEngine
 {
     private readonly IRenameVariableRefactoring _renameVariableRefactoring;
+    private readonly IExtractMethodRefactoring _extractMethodRefactoring;
 
-    public RefactoringEngine(IRenameVariableRefactoring? renameVariableRefactoring = null)
+    public RefactoringEngine(
+        IRenameVariableRefactoring? renameVariableRefactoring = null,
+        IExtractMethodRefactoring? extractMethodRefactoring = null)
     {
         _renameVariableRefactoring = renameVariableRefactoring ?? new RenameVariableRefactoring();
+        _extractMethodRefactoring = extractMethodRefactoring ?? new ExtractMethodRefactoring();
     }
 
     public string Apply(RefactoringVariant variant, RefactoringRequest request)
@@ -66,6 +92,10 @@ public sealed class RefactoringEngine
                 request.SourceCode,
                 request.OldName,
                 request.NewName),
+            RefactoringVariant.ExtractMethod => _extractMethodRefactoring.Apply(
+                request.SourceCode,
+                request.SelectedBlock,
+                request.NewMethodName),
             _ => throw new ArgumentOutOfRangeException(nameof(variant), variant, "Unsupported refactoring variant.")
         };
     }

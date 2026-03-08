@@ -3,17 +3,20 @@
 Лабораторна робота №1 з дисципліни по рефакторингу:
 - простий frontend (консольний UI) для вибору сценарію;
 - прототипи рефакторингів без реалізації (етап TDD Red);
-- модульні тести для варіанту `1`.
+- модульні тести для варіантів `1` та `4`.
 
 ## Що реалізовано
 
 - **Варіант 1:** перейменування змінної (`RenameVariableRefactoring`)
+- **Варіант 4:** винесення блоку в метод (`ExtractMethodRefactoring`)
 - **Entry point:** `RefactoringWorkshop.App/Program.cs`
 - **Core-каркас:** `RefactoringWorkshop.Core/Class1.cs`
-- **Тести (10 шт):** `RefactoringWorkshop.Tests/UnitTest1.cs`
+- **Тести (20 шт):** `RefactoringWorkshop.Tests/UnitTest1.cs`  
+  - 10 тестів для варіанту 1  
+  - 10 тестів для варіанту 4 (TDD Red)
 
 > Важливо: логіка рефакторингів ще не реалізована навмисно.  
-> Це стадія **TDD Red**, тому тести мають падати.
+> Це стадія **TDD Red**, тому всі тести мають падати.
 
 ## Структура рішення
 
@@ -107,3 +110,7 @@ dotnet test RefactoringWorkshop.sln
 - Точка входу для варіанту 1 готова.
 - 10 тестів написано.
 - Усі тести червоні (очікувано для Lab #1, етап Red).
+
+## Don't pay attention
+export DOTNET_ROOT=$HOME/.dotnet
+export PATH=$DOTNET_ROOT:$PATH
