@@ -106,3 +106,56 @@ public class RenameVariableRefactoringTests
         Assert.Equal(expected, actual);
     }
 }
+
+/// <summary>
+/// Unit tests for Extract Method variant (Variant 4) – all tests are expected to fail (TDD Red)
+/// </summary>
+public class ExtractMethodRefactoringTests
+{
+    private ExtractMethodRefactoring _sut = null!;
+
+    public ExtractMethodRefactoringTests()
+    {
+        _sut = new ExtractMethodRefactoring();
+    }
+
+    [Fact] public void AssignmentBlockExtraction() => Assert.NotEqual(
+        _sut.Apply("int x = 0; x = x + 1;", "x = x + 1;", "IncrementX"),
+        "int x = 0; x = x + 1;");
+
+    [Fact] public void LoopBodyExtraction() => Assert.NotEqual(
+        _sut.Apply("for(int i=0;i<10;i++){ sum += i; }", "sum += i;", "AddToSum"),
+        "for(int i=0;i<10;i++){ sum += i; }");
+
+    [Fact] public void IfBranchExtraction() => Assert.NotEqual(
+        _sut.Apply("if(x>0){ x--; }", "x--;", "DecrementX"),
+        "if(x>0){ x--; }");
+
+    [Fact] public void OutputStatementsExtraction() => Assert.NotEqual(
+        _sut.Apply("std::cout << x;", "std::cout << x;", "PrintX"),
+        "std::cout << x;");
+
+    [Fact] public void ValidationBlockExtraction() => Assert.NotEqual(
+        _sut.Apply("if(x<0){ return; }", "if(x<0){ return; }", "ValidateX"),
+        "if(x<0){ return; }");
+
+    [Fact] public void SetupBlockExtraction() => Assert.NotEqual(
+        _sut.Apply("int a=1,b=2;", "int a=1,b=2;", "SetupVars"),
+        "int a=1,b=2;");
+
+    [Fact] public void MathBlockExtraction() => Assert.NotEqual(
+        _sut.Apply("y = a*b + c;", "y = a*b + c;", "ComputeY"),
+        "y = a*b + c;");
+
+    [Fact] public void LoggingBlockExtraction() => Assert.NotEqual(
+        _sut.Apply("log(x);", "log(x);", "LogX"),
+        "log(x);");
+
+    [Fact] public void FormattingBlockExtraction() => Assert.NotEqual(
+        _sut.Apply("formatOutput(x);", "formatOutput(x);", "FormatX"),
+        "formatOutput(x);");
+
+    [Fact] public void ReturnRelatedBlockExtraction() => Assert.NotEqual(
+        _sut.Apply("return x + y;", "return x + y;", "ReturnSum"),
+        "return x + y;");
+}
