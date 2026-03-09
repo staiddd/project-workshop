@@ -12,7 +12,7 @@
 -  **Варіант 8:** винесення перейменування  методу (`RenameMethodRefactoring`)
 - **Entry point:** `RefactoringWorkshop.App/Program.cs`
 - **Core-каркас:** `RefactoringWorkshop.Core/Class1.cs`
-- **Тести (20 шт):** `RefactoringWorkshop.Tests/UnitTest1.cs`  
+- **Тести (30 шт):** `RefactoringWorkshop.Tests/UnitTest1.cs`  
   - 10 тестів для варіанту 1  
   - 10 тестів для варіанту 4 (TDD Red)
   - 10 тестів для варіанту 8
