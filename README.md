@@ -62,7 +62,7 @@ dotnet run --project RefactoringWorkshop.App
 dotnet test RefactoringWorkshop.sln
 ```
 
-Очікувано: `10 failed, 0 passed` (TDD Red).
+Очікувано: `30 failed, 0 passed` (TDD Red).
 
 ## Як працює frontend
 
@@ -110,7 +110,7 @@ dotnet test RefactoringWorkshop.sln
 
 - Архітектурний каркас готовий.
 - Точка входу для варіанту 1 готова.
-- 10 тестів написано.
+- 30 тестів написано.
 - Усі тести червоні (очікувано для Lab #1, етап Red).
 
 ## Don't pay attention
