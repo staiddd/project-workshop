@@ -6,7 +6,7 @@ public class RenameVariableRefactoringTests
 {
     private readonly RenameVariableRefactoring _sut = new();
 
-    /// <summary>Renames a local variable declaration and its usages.</summary>
+    /// <summary>Перевіряє перейменування локальної змінної в оголошенні та використаннях.</summary>
     [Fact]
     public void RenameVariable_LocalDeclarationAndUsage_UpdatesAllOccurrences()
     {
@@ -16,7 +16,7 @@ public class RenameVariableRefactoringTests
         Assert.Equal(expected, actual);
     }
 
-    /// <summary>Renames loop iterator variable in for statement body.</summary>
+    /// <summary>Перевіряє перейменування ітератора циклу for у всіх входженнях.</summary>
     [Fact]
     public void RenameVariable_ForLoopIterator_UpdatesIteratorReferences()
     {
@@ -26,7 +26,7 @@ public class RenameVariableRefactoringTests
         Assert.Equal(expected, actual);
     }
 
-    /// <summary>Keeps other identifiers intact when they only contain the old name as part.</summary>
+    /// <summary>Перевіряє, що часткові збіги в інших ідентифікаторах не змінюються.</summary>
     [Fact]
     public void RenameVariable_DoesNotTouchPartialMatches()
     {
@@ -36,7 +36,7 @@ public class RenameVariableRefactoringTests
         Assert.Equal(expected, actual);
     }
 
-    /// <summary>Renames a class field usage inside member method.</summary>
+    /// <summary>Перевіряє перейменування поля класу та його використання в методі.</summary>
     [Fact]
     public void RenameVariable_Field_UpdatesMemberAccess()
     {
@@ -46,7 +46,7 @@ public class RenameVariableRefactoringTests
         Assert.Equal(expected, actual);
     }
 
-    /// <summary>Renames a method parameter and all parameter usages.</summary>
+    /// <summary>Перевіряє перейменування параметра методу та всіх його використань.</summary>
     [Fact]
     public void RenameVariable_Parameter_UpdatesMethodBody()
     {
@@ -56,7 +56,7 @@ public class RenameVariableRefactoringTests
         Assert.Equal(expected, actual);
     }
 
-    /// <summary>Renames variable in nested block while preserving unrelated names.</summary>
+    /// <summary>Перевіряє перейменування змінної у вкладеному блоці без побічних змін.</summary>
     [Fact]
     public void RenameVariable_NestedBlock_UpdatesScopedSymbol()
     {
@@ -66,7 +66,7 @@ public class RenameVariableRefactoringTests
         Assert.Equal(expected, actual);
     }
 
-    /// <summary>Renames a pointer variable and dereference usage.</summary>
+    /// <summary>Перевіряє перейменування вказівника та операції розіменування.</summary>
     [Fact]
     public void RenameVariable_Pointer_UpdatesDereference()
     {
@@ -76,7 +76,7 @@ public class RenameVariableRefactoringTests
         Assert.Equal(expected, actual);
     }
 
-    /// <summary>Renames variable used in conditional expression.</summary>
+    /// <summary>Перевіряє перейменування змінної в умові та тілі умовного оператора.</summary>
     [Fact]
     public void RenameVariable_Conditional_UpdatesConditionAndBody()
     {
@@ -86,7 +86,7 @@ public class RenameVariableRefactoringTests
         Assert.Equal(expected, actual);
     }
 
-    /// <summary>Renames variable in arithmetic expression.</summary>
+    /// <summary>Перевіряє перейменування змінної в арифметичних виразах.</summary>
     [Fact]
     public void RenameVariable_Expression_UpdatesAllExpressionUsages()
     {
@@ -96,7 +96,7 @@ public class RenameVariableRefactoringTests
         Assert.Equal(expected, actual);
     }
 
-    /// <summary>Renames variable in return statement and declaration.</summary>
+    /// <summary>Перевіряє перейменування змінної в оголошенні та операторі return.</summary>
     [Fact]
     public void RenameVariable_Return_UpdatesDeclarationAndReturn()
     {
@@ -108,7 +108,7 @@ public class RenameVariableRefactoringTests
 }
 
 /// <summary>
-/// Unit tests for Extract Method variant (Variant 4) – all tests are expected to fail (TDD Red)
+/// Модульні тести для варіанта 4 (Виділення методу). На етапі TDD Red тести очікувано падають.
 /// </summary>
 public class ExtractMethodRefactoringTests
 {
@@ -119,42 +119,52 @@ public class ExtractMethodRefactoringTests
         _sut = new ExtractMethodRefactoring();
     }
 
+    /// <summary>Перевіряє виділення простого блоку присвоєння в окремий метод.</summary>
     [Fact] public void AssignmentBlockExtraction() => Assert.NotEqual(
         _sut.Apply("int x = 0; x = x + 1;", "x = x + 1;", "IncrementX"),
         "int x = 0; x = x + 1;");
 
+    /// <summary>Перевіряє виділення тіла циклу в новий метод.</summary>
     [Fact] public void LoopBodyExtraction() => Assert.NotEqual(
         _sut.Apply("for(int i=0;i<10;i++){ sum += i; }", "sum += i;", "AddToSum"),
         "for(int i=0;i<10;i++){ sum += i; }");
 
+    /// <summary>Перевіряє виділення гілки if в окремий метод.</summary>
     [Fact] public void IfBranchExtraction() => Assert.NotEqual(
         _sut.Apply("if(x>0){ x--; }", "x--;", "DecrementX"),
         "if(x>0){ x--; }");
 
+    /// <summary>Перевіряє виділення оператора виведення в новий метод.</summary>
     [Fact] public void OutputStatementsExtraction() => Assert.NotEqual(
         _sut.Apply("std::cout << x;", "std::cout << x;", "PrintX"),
         "std::cout << x;");
 
+    /// <summary>Перевіряє виділення блоку валідації в окремий метод.</summary>
     [Fact] public void ValidationBlockExtraction() => Assert.NotEqual(
         _sut.Apply("if(x<0){ return; }", "if(x<0){ return; }", "ValidateX"),
         "if(x<0){ return; }");
 
+    /// <summary>Перевіряє виділення ініціалізаційного блоку в окремий метод.</summary>
     [Fact] public void SetupBlockExtraction() => Assert.NotEqual(
         _sut.Apply("int a=1,b=2;", "int a=1,b=2;", "SetupVars"),
         "int a=1,b=2;");
 
+    /// <summary>Перевіряє виділення математичного обчислення в новий метод.</summary>
     [Fact] public void MathBlockExtraction() => Assert.NotEqual(
         _sut.Apply("y = a*b + c;", "y = a*b + c;", "ComputeY"),
         "y = a*b + c;");
 
+    /// <summary>Перевіряє виділення блоку логування в окремий метод.</summary>
     [Fact] public void LoggingBlockExtraction() => Assert.NotEqual(
         _sut.Apply("log(x);", "log(x);", "LogX"),
         "log(x);");
 
+    /// <summary>Перевіряє виділення блоку форматування в окремий метод.</summary>
     [Fact] public void FormattingBlockExtraction() => Assert.NotEqual(
         _sut.Apply("formatOutput(x);", "formatOutput(x);", "FormatX"),
         "formatOutput(x);");
 
+    /// <summary>Перевіряє виділення блоку, пов'язаного з return-виразом.</summary>
     [Fact] public void ReturnRelatedBlockExtraction() => Assert.NotEqual(
         _sut.Apply("return x + y;", "return x + y;", "ReturnSum"),
         "return x + y;");
@@ -165,6 +175,7 @@ public class RenameMethodRefactoringTests
 {
     private readonly RenameMethodRefactoring _sut = new();
 
+    /// <summary>Перевіряє перейменування назви методу в його оголошенні.</summary>
     [Fact]
     public void RenameMethod_DefinitionOnly_UpdatesMethodName()
     {
@@ -174,8 +185,7 @@ public class RenameMethodRefactoringTests
         Assert.Equal(expected, actual);
     }
 
-   
-
+    /// <summary>Перевіряє перейменування виклику методу в місці використання.</summary>
     [Fact]
     public void RenameMethod_CallSite_UpdatesUsage()
     {
@@ -185,6 +195,7 @@ public class RenameMethodRefactoringTests
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>Перевіряє перейменування оголошення методу та всіх його викликів.</summary>
     [Fact]
     public void RenameMethod_DeclarationAndMultipleCalls_UpdatesAll()
     {
@@ -194,6 +205,7 @@ public class RenameMethodRefactoringTests
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>Перевіряє перейменування методу без зміни списку параметрів.</summary>
     [Fact]
     public void RenameMethod_WithParameters_KeepsSignatureIntact()
     {
@@ -203,6 +215,7 @@ public class RenameMethodRefactoringTests
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>Перевіряє перейменування методу в контексті оголошення класу.</summary>
     [Fact]
     public void RenameMethod_InClassContext_UpdatesMethodName()
     {
@@ -212,6 +225,7 @@ public class RenameMethodRefactoringTests
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>Перевіряє перейменування при використанні вказівника на метод.</summary>
     [Fact]
     public void RenameMethod_PointerToMethod_UpdatesUsage()
     {
@@ -221,6 +235,7 @@ public class RenameMethodRefactoringTests
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>Перевіряє перейменування шаблонної функції.</summary>
     [Fact]
     public void RenameMethod_TemplateFunction_UpdatesName()
     {
@@ -230,6 +245,7 @@ public class RenameMethodRefactoringTests
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>Перевіряє, що схожі назви (підрядки) не перейменовуються помилково.</summary>
     [Fact]
     public void RenameMethod_SimilarNameSubstring_DoesNotRenamePartialMatch()
     {
@@ -239,6 +255,7 @@ public class RenameMethodRefactoringTests
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>Перевіряє, що в коментарі назва методу не змінюється.</summary>
     [Fact]
     public void RenameMethod_InsideComment_DoesNotRename()
     {
@@ -248,6 +265,7 @@ public class RenameMethodRefactoringTests
         Assert.Equal(expected, actual);
     }
 
+    /// <summary>Перевіряє, що в рядковому літералі назва методу не змінюється.</summary>
     [Fact]
     public void RenameMethod_InStringLiteral_DoesNotRename()
     {

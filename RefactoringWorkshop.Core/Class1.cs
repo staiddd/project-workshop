@@ -1,17 +1,17 @@
 ﻿namespace RefactoringWorkshop.Core;
 
 /// <summary>
-/// Lab variant implemented in this repository.
+/// Варіанти рефакторингу, доступні в цьому прототипі.
 /// </summary>
 public enum RefactoringVariant
 {
     RenameVariable = 1,
     ExtractMethod = 4,
-    RenameMethod = 8    // <-- новый вариант
+    RenameMethod = 8
 }
 
 /// <summary>
-/// Common request model used by the entry point.
+/// Універсальна модель запиту, яку формує точка входу.
 /// </summary>
 public sealed class RefactoringRequest
 {
@@ -52,13 +52,13 @@ public sealed class RenameVariableRefactoring : IRenameVariableRefactoring
 {
     public string Apply(string sourceCode, string oldName, string newName)
     {
-        // TODO (TDD/Red stage): implement variable rename for C++ source.
+        // TODO (етап TDD Red): реалізувати перейменування змінної для C++ коду.
         return sourceCode;
     }
 }
 
 /// <summary>
-/// Extract Method refactoring interface + stub.
+/// Контракт і заглушка для рефакторингу "Виділення методу".
 /// </summary>
 public interface IExtractMethodRefactoring
 {
@@ -69,7 +69,7 @@ public sealed class ExtractMethodRefactoring : IExtractMethodRefactoring
 {
     public string Apply(string sourceCode, string selectedBlock, string newMethodName)
     {
-        // TODO (TDD/Red stage): implement extract method for C++ source.
+        // TODO (етап TDD Red): реалізувати виділення методу для C++ коду.
         return sourceCode;
     }
 }
@@ -87,7 +87,7 @@ public sealed class RenameMethodRefactoring : IRenameMethodRefactoring
 {
     public string Apply(string sourceCode, string oldMethodName, string newMethodName)
     {
-        // TODO (TDD/Red stage): implement extract method for C++ source.
+        // TODO (етап TDD Red): реалізувати перейменування методу для C++ коду.
         return sourceCode;
     }
 }
@@ -95,7 +95,7 @@ public sealed class RenameMethodRefactoring : IRenameMethodRefactoring
 
 
 /// <summary>
-/// Orchestrator used by UI entry point.
+/// Оркестратор, який викликає потрібний рефакторинг із точки входу.
 /// </summary>
 public sealed class RefactoringEngine
 {
