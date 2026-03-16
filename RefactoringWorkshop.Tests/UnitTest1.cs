@@ -168,6 +168,26 @@ public class ExtractMethodRefactoringTests
     [Fact] public void ReturnRelatedBlockExtraction() => Assert.NotEqual(
         _sut.Apply("return x + y;", "return x + y;", "ReturnSum"),
         "return x + y;");
+
+    /// <summary>Перевіряє, що при виділенні блоку новий виклик методу передає залежні змінні як параметри.</summary>
+    [Fact]
+    public void ExtractMethod_PassesDependentVariablesToNewMethodCall()
+    {
+        var source = "int total=0; int delta=5; total = total + delta;";
+        var actual = _sut.Apply(source, "total = total + delta;", "ApplyDelta");
+
+        Assert.Matches(@".*ApplyDelta\s*\([^)]*total[^)]*delta[^)]*\)\s*;.*", actual);
+    }
+
+    /// <summary>Перевіряє передачу параметра-об'єкта в новий метод при виділенні блоку з кількома викликами.</summary>
+    [Fact]
+    public void ExtractMethod_PassesObjectParameterForProcessingBlock()
+    {
+        var source = "if(order == nullptr){ return -1; } validate(order); recalculate(order); log(order->id); return 0;";
+        var actual = _sut.Apply(source, "validate(order); recalculate(order); log(order->id);", "ProcessOrder");
+
+        Assert.Matches(@".*ProcessOrder\s*\([^)]*order[^)]*\)\s*;.*", actual);
+    }
 }
 
 
