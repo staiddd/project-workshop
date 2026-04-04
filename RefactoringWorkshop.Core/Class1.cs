@@ -159,11 +159,89 @@ public interface IExtractMethodRefactoring
 
 public sealed class ExtractMethodRefactoring : IExtractMethodRefactoring
 {
+    private static readonly HashSet<string> CppKeywords = new(StringComparer.Ordinal)
+    {
+        "auto", "break", "case", "catch", "class", "const", "continue", "default",
+        "delete", "do", "double", "else", "enum", "explicit", "extern", "false",
+        "float", "for", "friend", "goto", "if", "inline", "int", "long",
+        "mutable", "namespace", "new", "nullptr", "operator", "private", "protected",
+        "public", "register", "return", "short", "signed", "sizeof", "static",
+        "struct", "switch", "template", "this", "throw", "true", "try", "typedef",
+        "typename", "union", "unsigned", "using", "virtual", "void", "volatile",
+        "while", "bool", "char", "std", "string"
+    };
+
     public string Apply(string sourceCode, string selectedBlock, string newMethodName)
     {
-        // TODO (етап TDD Red): реалізувати виділення методу для C++ коду.
-        return sourceCode;
+        var blockIndex = sourceCode.IndexOf(selectedBlock, StringComparison.Ordinal);
+        if (blockIndex < 0)
+            return sourceCode;
+
+        var blockIdentifiers = ExtractIdentifiersInOrder(selectedBlock);
+        var functionNamesInBlock = ExtractFunctionNames(selectedBlock);
+
+        var outsideSource = sourceCode.Remove(blockIndex, selectedBlock.Length);
+        var outsideIdentifiers = new HashSet<string>(ExtractIdentifiersInOrder(outsideSource));
+
+        var parameters = blockIdentifiers
+            .Where(id => !CppKeywords.Contains(id)
+                      && !functionNamesInBlock.Contains(id)
+                      && outsideIdentifiers.Contains(id))
+            .ToList();
+
+        var call = $"{newMethodName}({string.Join(", ", parameters)});";
+
+        return string.Concat(
+            sourceCode.AsSpan(0, blockIndex),
+            call,
+            sourceCode.AsSpan(blockIndex + selectedBlock.Length));
     }
+
+    private static List<string> ExtractIdentifiersInOrder(string code)
+    {
+        var result = new List<string>();
+        var seen = new HashSet<string>();
+        var i = 0;
+        while (i < code.Length)
+        {
+            if (IsIdentifierStart(code[i]))
+            {
+                var start = i++;
+                while (i < code.Length && IsIdentifierChar(code[i])) i++;
+                var id = code.Substring(start, i - start);
+                if (seen.Add(id)) result.Add(id);
+            }
+            else i++;
+        }
+        return result;
+    }
+
+    private static HashSet<string> ExtractFunctionNames(string code)
+    {
+        var result = new HashSet<string>();
+        var i = 0;
+        while (i < code.Length)
+        {
+            if (IsIdentifierStart(code[i]))
+            {
+                var start = i++;
+                while (i < code.Length && IsIdentifierChar(code[i])) i++;
+                var id = code.Substring(start, i - start);
+                var j = i;
+                while (j < code.Length && code[j] == ' ') j++;
+                if (j < code.Length && code[j] == '(')
+                    result.Add(id);
+            }
+            else i++;
+        }
+        return result;
+    }
+
+    private static bool IsIdentifierStart(char c) =>
+        (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+
+    private static bool IsIdentifierChar(char c) =>
+        IsIdentifierStart(c) || (c >= '0' && c <= '9');
 }
 
 
