@@ -1,4 +1,4 @@
-﻿namespace RefactoringWorkshop.Core;
+namespace RefactoringWorkshop.Core;
 
 /// <summary>
 /// Варіанти рефакторингу, доступні в цьому прототипі.
@@ -52,9 +52,101 @@ public sealed class RenameVariableRefactoring : IRenameVariableRefactoring
 {
     public string Apply(string sourceCode, string oldName, string newName)
     {
-        // TODO (етап TDD Red): реалізувати перейменування змінної для C++ коду.
-        return sourceCode;
+        if (string.IsNullOrEmpty(oldName) || oldName == newName)
+            return sourceCode;
+
+        var sb = new System.Text.StringBuilder(sourceCode.Length);
+        var i = 0;
+
+        while (i < sourceCode.Length)
+        {
+            // Line comment //
+            if (i + 1 < sourceCode.Length && sourceCode[i] == '/' && sourceCode[i + 1] == '/')
+            {
+                sb.Append(sourceCode[i++]);
+                sb.Append(sourceCode[i++]);
+                while (i < sourceCode.Length && sourceCode[i] != '\n' && sourceCode[i] != '\r')
+                    sb.Append(sourceCode[i++]);
+                continue;
+            }
+
+            // Block comment /* */
+            if (i + 1 < sourceCode.Length && sourceCode[i] == '/' && sourceCode[i + 1] == '*')
+            {
+                sb.Append(sourceCode[i++]);
+                sb.Append(sourceCode[i++]);
+                while (i < sourceCode.Length)
+                {
+                    if (i + 1 < sourceCode.Length && sourceCode[i] == '*' && sourceCode[i + 1] == '/')
+                    {
+                        sb.Append(sourceCode[i++]);
+                        sb.Append(sourceCode[i++]);
+                        break;
+                    }
+                    sb.Append(sourceCode[i++]);
+                }
+                continue;
+            }
+
+            // String literal "..."
+            if (sourceCode[i] == '"')
+            {
+                sb.Append(sourceCode[i++]);
+                while (i < sourceCode.Length)
+                {
+                    var c = sourceCode[i++];
+                    sb.Append(c);
+                    if (c == '\\' && i < sourceCode.Length)
+                        sb.Append(sourceCode[i++]);
+                    else if (c == '"')
+                        break;
+                }
+                continue;
+            }
+
+            // Character literal 'x' or '\n'
+            if (sourceCode[i] == '\'')
+            {
+                sb.Append(sourceCode[i++]);
+                while (i < sourceCode.Length)
+                {
+                    var c = sourceCode[i++];
+                    sb.Append(c);
+                    if (c == '\\' && i < sourceCode.Length)
+                        sb.Append(sourceCode[i++]);
+                    else if (c == '\'')
+                        break;
+                }
+                continue;
+            }
+
+            if (IsIdentifierStart(sourceCode[i]))
+            {
+                var start = i;
+                i++;
+                while (i < sourceCode.Length && IsIdentifierChar(sourceCode[i]))
+                    i++;
+
+                var len = i - start;
+                if (len == oldName.Length && string.CompareOrdinal(sourceCode, start, oldName, 0, len) == 0)
+                    sb.Append(newName);
+                else
+                    sb.Append(sourceCode, start, len);
+
+                continue;
+            }
+
+            sb.Append(sourceCode[i++]);
+        }
+
+        return sb.ToString();
     }
+
+    private static bool IsIdentifierStart(char c) =>
+        (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+
+    private static bool IsIdentifierChar(char c) =>
+        IsIdentifierStart(c) || (c >= '0' && c <= '9');
 }
 
 /// <summary>
