@@ -1,5 +1,5 @@
 namespace RefactoringWorkshop.Core;
-
+using System.Text.RegularExpressions;
 /// <summary>
 /// Варіанти рефакторингу, доступні в цьому прототипі.
 /// </summary>
@@ -257,8 +257,24 @@ public sealed class RenameMethodRefactoring : IRenameMethodRefactoring
 {
     public string Apply(string sourceCode, string oldMethodName, string newMethodName)
     {
-        // TODO (етап TDD Red): реалізувати перейменування методу для C++ коду.
-        return sourceCode;
+        string pattern = $@"\b{oldMethodName}\b(?=\s*\()|(?<=&[\w:]*)\b{oldMethodName}\b";
+
+        string result =  Regex.Replace(sourceCode, pattern, m =>
+        {
+            int lineStart = sourceCode.LastIndexOf('\n', m.Index) + 1;
+            
+            string leftPart = sourceCode.Substring(lineStart, m.Index - lineStart);
+
+            if (leftPart.Contains("//"))
+            {
+                return m.Value;
+            }
+
+            return newMethodName;
+        });
+
+
+        return result;
     }
 }
 
