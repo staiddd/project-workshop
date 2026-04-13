@@ -173,6 +173,9 @@ public sealed class ExtractMethodRefactoring : IExtractMethodRefactoring
 
     public string Apply(string sourceCode, string selectedBlock, string newMethodName)
     {
+        if (string.IsNullOrWhiteSpace(selectedBlock) || string.IsNullOrWhiteSpace(newMethodName))
+            return sourceCode;
+
         var blockIndex = sourceCode.IndexOf(selectedBlock, StringComparison.Ordinal);
         if (blockIndex < 0)
             return sourceCode;
@@ -189,12 +192,17 @@ public sealed class ExtractMethodRefactoring : IExtractMethodRefactoring
                       && outsideIdentifiers.Contains(id))
             .ToList();
 
-        var call = $"{newMethodName}({string.Join(", ", parameters)});";
-
-        return string.Concat(
+        var parameterList = string.Join(", ", parameters);
+        var call = $"{newMethodName}({parameterList});";
+        var updatedSource = string.Concat(
             sourceCode.AsSpan(0, blockIndex),
             call,
             sourceCode.AsSpan(blockIndex + selectedBlock.Length));
+
+        var extractedBlock = selectedBlock.Trim();
+        var extractedMethod = $"{Environment.NewLine}{Environment.NewLine}void {newMethodName}({parameterList}){{ {extractedBlock} }}";
+
+        return updatedSource + extractedMethod;
     }
 
     private static List<string> ExtractIdentifiersInOrder(string code)

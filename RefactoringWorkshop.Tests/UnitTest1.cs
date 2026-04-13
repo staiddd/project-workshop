@@ -177,6 +177,7 @@ public class ExtractMethodRefactoringTests
         var actual = _sut.Apply(source, "total = total + delta;", "ApplyDelta");
 
         Assert.Matches(@".*ApplyDelta\s*\([^)]*total[^)]*delta[^)]*\)\s*;.*", actual);
+        Assert.Contains("void ApplyDelta(total, delta){ total = total + delta; }", actual);
     }
 
     /// <summary>Перевіряє передачу параметра-об'єкта в новий метод при виділенні блоку з кількома викликами.</summary>
@@ -187,6 +188,7 @@ public class ExtractMethodRefactoringTests
         var actual = _sut.Apply(source, "validate(order); recalculate(order); log(order->id);", "ProcessOrder");
 
         Assert.Matches(@".*ProcessOrder\s*\([^)]*order[^)]*\)\s*;.*", actual);
+        Assert.Contains("void ProcessOrder(order){ validate(order); recalculate(order); log(order->id); }", actual);
     }
 }
 
